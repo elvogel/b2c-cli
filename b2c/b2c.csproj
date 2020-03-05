@@ -3,12 +3,31 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <PackageId>b2c-cli</PackageId>
+        <PackageVersion>1.0.1</PackageVersion>
+        <Title>Azure AD B2C Command Line Tool</Title>
+        <Authors>endpointsystems</Authors>
+        <Description>This tool lets you create groups and users, and assign users to groups within Azure AD B2C. </Description>
+        <PackageProjectUrl>https://github.com/elvogel/b2c</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/elvogel/b2c</RepositoryUrl>
+        <RepositoryType>GitHub</RepositoryType>
+        <PackageTags>azure,ad,b2c,cli</PackageTags>
+        <Company>Endpoint Systems</Company>
+        <Product>b2c command line tool</Product>
+        <AssemblyVersion>0.2</AssemblyVersion>
+        <FileVersion>0.2</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.2" />
       <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.2" />
       <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="b2c.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

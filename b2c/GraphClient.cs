@@ -1,48 +1,65 @@
+#pragma warning disable 649
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using b2c.Data;
+using b2c.Graph;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Formatting = System.Xml.Formatting;
 
 namespace b2c
 {
     public class GraphClient
     {
-        private static string aadGraphResourceId = "https://graph.windows.net/";
         private static string aadInstance = "https://login.microsoftonline.com/";
-        private static string aadGraphEndpoint = "https://graph.windows.net/";
         private static string aadGraphVersion = "api-version=1.6";
-
-        private string AppId;
-        private string Tenant;
-        private string Secret;
 
         private static HttpClient client;
         private static ClientCredential credential;
         private static AuthenticationContext authContext;
         private static AuthenticationResult result;
         private IConsole console;
-        private Config config;
-        public GraphClient(Config config, IConsole console)
+        private B2CConfig config;
+        public GraphClient(B2CConfig config, IConsole console)
         {
             this.console = console;
             this.config = config;
-            authContext = new AuthenticationContext(aadInstance + Tenant);
-            credential = new ClientCredential(AppId,Secret);
-        }
-
-        private async Task Initialize()
-        {
+            authContext = new AuthenticationContext(aadInstance + config.Tenant,true);
+            credential = new ClientCredential(config.AppId,config.Secret);
             client = new HttpClient();
-            result = await authContext.AcquireTokenAsync(aadGraphResourceId, credential);
+            result = authContext.AcquireTokenAsync("https://graph.windows.net/", credential).Result;
+
         }
 
-        public async Task<string> CreateUser(string displayName, string mailNickname, string password)
+        public async Task<ListGroupsResponse> ListGroups()
+        {
+            var uri = "https://graph.windows.net/myorganization/groups?" + aadGraphVersion;
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+            return JsonConvert.DeserializeObject<ListGroupsResponse>(await SendRequest(request));
+        }
+
+        public async Task<ListUsersResponse> ListUsers(string filterName = null, string filterValue = null)
+        {
+            var uri = "https://graph.windows.net/myorganization/users?" + aadGraphVersion;
+            if (!string.IsNullOrEmpty(filterName))
+            {
+                uri += $"$starts" +
+                       $"with({filterName},{filterValue})";
+            }
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
+            var ret = await SendRequest(request);
+
+            return JsonConvert.DeserializeObject<ListUsersResponse>(ret);
+
+        }
+
+        public async Task<JObject> CreateUser(string displayName, string mailNickname, string password)
         {
             var uri = "https://graph.windows.net/myorganization/users?" + aadGraphVersion;
 
@@ -54,16 +71,12 @@ namespace b2c
                                             "\"passwordProfile\": {\n    " +
                                                 "\"password\": \"" + password + "\",\n    " +
                                                 "\"forceChangePasswordNextLogin\": false\n  },\n  " +
-                                            "\"userPrincipalName\": \"" + mailNickname + "@" + Tenant + "\"\n}")
+                                            "\"userPrincipalName\": \"" + mailNickname + "@" + config.Tenant + "\"\n}")
             };
 
             request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", result.AccessToken);
-
-            var obj = JsonConvert.DeserializeObject(await SendRequest(request)) as JObject;
-
-            //return obj["objectId"].ToString();
-            return obj.ToString();
+            return JsonConvert.DeserializeObject<JObject>(await SendRequest(request));
         }
 
         public async Task<string> AddUserToGroup(string userId, string groupId)
@@ -87,15 +100,24 @@ namespace b2c
 
             var error = await response.Content.ReadAsStringAsync();
             var formatted = JsonConvert.DeserializeObject(error) as JObject;
-            throw new WebException("Error Calling the Graph API: \n" + JsonConvert.SerializeObject(formatted,Newtonsoft.Json.Formatting.Indented));
+            throw new WebException("Error Calling the Graph API: \n" +
+                                   JsonConvert.SerializeObject(formatted,Formatting.Indented));
         }
 
         public async Task<string> DeleteUser(string userId)
         {
-            var uri = $"https://graph.windows.net/myorganization/users/{userId}?{aadGraphVersion}";
+            try
+            {
+                var uri = $"https://graph.windows.net/myorganization/users/{userId}?{aadGraphVersion}";
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
-            return await SendRequest(request);
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, uri);
+                await SendRequest(request);
+                return "operation completed successfully";
+            }
+            catch (Exception ex)
+            {
+                return $"{ex.GetType()}: {ex.Message}";
+            }
         }
     }
 }
