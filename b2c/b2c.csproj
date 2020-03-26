@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <PackageId>b2c-cli</PackageId>
         <PackageVersion>1.0.1</PackageVersion>
         <Title>Azure AD B2C Command Line Tool</Title>
