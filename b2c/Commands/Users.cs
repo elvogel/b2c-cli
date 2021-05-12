@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using b2c.Data;
 using McMaster.Extensions.CommandLineUtils;
@@ -87,7 +86,7 @@ namespace b2c.Commands
         {
             var sw = Stopwatch.StartNew();
             var config = Config.GetConfig();
-            var client = new GraphClient(config, console);
+            var client = new GraphClient2(config, console);
             console.WriteLine($"getting users...");
             var ret = await client.ListUsers();
             if (verboseFormat)
@@ -105,7 +104,7 @@ namespace b2c.Commands
                 foreach (var user in ret.value)
                 {
                     console.WriteLine(
-                        $"{user.displayName} objectId: {user.objectId}, userPrincipalName: {user.userPrincipalName}, mailNickname: {user.mailNickname}");
+                        $"{user.displayName} objectId: {user.id}, userPrincipalName: {user.userPrincipalName}, mailNickname: {user.displayName}");
                 }
             }
             sw.Stop();

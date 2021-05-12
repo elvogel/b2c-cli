@@ -11,9 +11,5 @@ namespace b2c.Commands
     public class B2C
     {
         private const string help = "-?|-h|--help";
-
-
-
-
     }
 }

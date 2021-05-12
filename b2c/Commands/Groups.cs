@@ -43,7 +43,7 @@ namespace b2c.Commands
             {
                 foreach (var g in x.value)
                 {
-                    console.WriteLine($"{g.displayName} {g.objectId}");
+                    console.WriteLine($"{g.displayName} {g.id}");
                 }
             }
 
