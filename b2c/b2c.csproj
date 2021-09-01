@@ -4,7 +4,7 @@
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
         <PackageId>b2c-cli</PackageId>
-        <PackageVersion>2.0.3</PackageVersion>
+        <PackageVersion>2.0.4</PackageVersion>
         <Title>Azure AD B2C Command Line Tool</Title>
         <Authors>endpointsystems</Authors>
         <Description>This tool lets you create groups and users, and assign users to groups within Azure AD B2C. </Description>
@@ -17,16 +17,16 @@
         <AssemblyVersion>2.0.3</AssemblyVersion>
         <FileVersion>2.0.3</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageReleaseNotes>upgrade to .NET Core 5 and the May 2021 edition of Azure AD B2C</PackageReleaseNotes>
+        <PackageReleaseNotes>update NuGet dependencies.</PackageReleaseNotes>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.*" />
-      <PackageReference Include="Microsoft.Graph" Version="4.0.0-preview.4" />
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
+      <PackageReference Include="Microsoft.Graph" Version="4.0.0" />
       <PackageReference Include="Microsoft.Graph.Beta" Version="4.2.0-preview" />
-      <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0-preview.11" />
-      <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.2" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.*" />
+      <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.9" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
     <ItemGroup>
