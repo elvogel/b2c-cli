@@ -2,9 +2,9 @@
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <PackageId>b2c-cli</PackageId>
-        <PackageVersion>2.0.4</PackageVersion>
+        <PackageVersion>2.0.3</PackageVersion>
         <Title>Azure AD B2C Command Line Tool</Title>
         <Authors>endpointsystems</Authors>
         <Description>This tool lets you create groups and users, and assign users to groups within Azure AD B2C. </Description>
@@ -17,14 +17,24 @@
         <AssemblyVersion>2.0.3</AssemblyVersion>
         <FileVersion>2.0.3</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageReleaseNotes>update NuGet dependencies.</PackageReleaseNotes>
+        <PackageReleaseNotes>upgrade to .NET Core 5 and the May 2021 edition of Azure AD B2C</PackageReleaseNotes>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
-      <PackageReference Include="Microsoft.Graph" Version="4.0.0" />
-      <PackageReference Include="Microsoft.Graph.Beta" Version="4.2.0-preview" />
-      <PackageReference Include="Microsoft.Graph.Core" Version="2.0.0" />
+      <PackageReference Include="Azure.Core" Version="1.24.0" />
+      <PackageReference Include="Azure.Identity" Version="1.6.0" />
+      <PackageReference Include="EPS.B2C.IEF" Version="0.0.3" />
+      <PackageReference Include="EPS.Extensions.B2CGraphUtil" Version="6.0.0" />
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
+      <PackageReference Include="Microsoft.Graph" Version="4.25.0" />
+      <PackageReference Include="Microsoft.Graph.Core" Version="2.0.8" />
       <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.9" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>

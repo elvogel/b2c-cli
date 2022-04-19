@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using b2c.Data;
 using b2c.Graph;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Graph;
 using Microsoft.Identity.Client;
 
 namespace b2c
@@ -42,6 +41,7 @@ namespace b2c
 
         public async Task<ListGroupsResponse> ListGroups()
         {
+            
             return null;
         }
         public async Task<ListUsersResponse> ListUsers(string filterName = null, string filterValue = null)

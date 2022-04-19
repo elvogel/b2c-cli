@@ -1,9 +1,7 @@
 using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using b2c.Data;
+using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
-using Newtonsoft.Json;
 
 namespace b2c.Commands
 {
@@ -21,55 +19,49 @@ namespace b2c.Commands
     [Command("list",Description = "list all available groups")]
     class ListGroups: BaseCommand
     {
+        public GroupsRepo Groups { get; set; }
+        public ListGroups(GroupsRepo groups)
+        {
+            Groups = groups;
+        }
         public async Task OnExecute(IConsole console)
         {
             var sw = Stopwatch.StartNew();
-            var config = Config.GetConfig();
-            var client = new GraphClient(config, console);
             console.WriteLine("getting groups...");
-            var x = await client.ListGroups();
+            var groups = await Groups.GetAllGroups();
 
-            if (verbose)
+            foreach (var g in groups)
             {
-                var y = JsonConvert.SerializeObject(x);
-                console.WriteLine(y);
+                console.WriteLine($"{g.Id},{g.DisplayName}");
             }
-            else if (verboseFormat)
-            {
-                var y = JsonConvert.SerializeObject(x,Formatting.Indented);
-                console.WriteLine(y);
-            }
-            else
-            {
-                foreach (var g in x.value)
-                {
-                    console.WriteLine($"{g.displayName} {g.id}");
-                }
-            }
-
             sw.Stop();
             if (!time) return;
-            console.WriteLine($"operation completed in {sw.ElapsedMilliseconds}ms");
+            console.WriteLine($"operation completed in {sw.ElapsedMilliseconds} ms");
         }
     }
 
 
-    [Command("user",Description = "Add user to a group")]
+    [Command("user", Description = "Add user to a group")]
     class AddUserToGroup
     {
-        [Option(ShortName = "g",LongName = "group",Description = "the group's object ID")]
+        [Option(ShortName = "g", LongName = "group", Description = "the group's object ID")]
         public string GroupId { get; set; }
 
-        [Option(ShortName = "u",LongName = "user",Description = "the user's object ID")]
+        [Option(ShortName = "u", LongName = "user", Description = "the user's object ID")]
         public string UserId { get; set; }
 
-        public async Task OnExecute(IConsole console)
+        public UserRepo Users { get; set; }
+
+        public AddUserToGroup(UserRepo users)
+        {
+            Users = users;
+        }
+
+    public async Task OnExecute(IConsole console)
         {
             var sw = Stopwatch.StartNew();
-            var config = Config.GetConfig();
-            var client = new GraphClient(config, console);
             console.WriteLine("adding user to group...");
-            var ret = await client.AddUserToGroup(UserId, GroupId);
+            await Users.AddToGroup(UserId, GroupId);
             sw.Stop();
             console.WriteLine($"operation completed in {sw.ElapsedMilliseconds}ms");
 

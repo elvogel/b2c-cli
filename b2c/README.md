@@ -2,7 +2,7 @@
 
 The purpose of this command-line tool is to provide quick and easy access to the creation of users and groups within an Azure AD B2C instance. This CLI utility is specifically designed to replace the [B2C GraphAPI Dotnet CLI](https://github.com/AzureADQuickStarts/B2C-GraphAPI-DotNet.git) project Microsoft gives us all on GitHub, which is helpful for sample code but unfortunately not much else.
 
-Think of this utility as a quick and easy way to get impotant information out of Azure AD B2C without having to use the UI. 
+Think of this utility as a quick and easy way to get important information out of Azure AD B2C without having to use the UI. 
 
 The current scope of this project is almost exclusively limited to:
 

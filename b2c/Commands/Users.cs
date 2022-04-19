@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using b2c.Data;
+using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 
@@ -20,6 +21,13 @@ namespace b2c.Commands
     [Command(Name="create",Description = "create the user")]
     class CreateUser: BaseCommand
     {
+        
+        [Option(ShortName = "first", Description = "User's first name")]
+        public string firstName { get; set; }
+
+        [Option(ShortName = "last",Description = "Users' last name")]
+        public string lastName { get; set; }
+
         [Option(ShortName = "display",Description = "the user's display name")]
         public string displayName { get; set; }
 
@@ -29,15 +37,20 @@ namespace b2c.Commands
         [Option(ShortName = "upn", Description = "username for the tenant")]
         public string userPrincipalName { get; set; }
 
+        public UserRepo Users { get; set; }
+
+        public CreateUser(UserRepo users)
+        {
+            Users = users;
+        }
         public async Task OnExecute(IConsole console)
         {
             try
             {
                 var sw = Stopwatch.StartNew();
                 var config = Config.GetConfig();
-                var client = new GraphClient(config, console);
                 console.WriteLine($"creating user {displayName}...");
-                var user = await client.CreateUser(displayName, userPrincipalName, password);
+                var user = await Users.AddUser(firstName, lastName, displayName, password);
 
                 if (verboseFormat)
                 {
@@ -50,7 +63,7 @@ namespace b2c.Commands
                     console.WriteLine(str);
                 }
                 else
-                    console.WriteLine($"displayName: {user["displayName"]}, objectId: {user["objectId"]}, userPrincipalName: {user["userPrincipalName"]}");
+                    console.WriteLine($"displayName: {user.DisplayName}, objectId: {user.Id}, userPrincipalName: {user.UserPrincipalName}");
 
                 if (!time) return;
                 sw.Stop();
