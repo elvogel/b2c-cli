@@ -18,7 +18,7 @@
         <FileVersion>2.0.3</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageReleaseNotes>upgrade to .NET Core 5 and the May 2021 edition of Azure AD B2C</PackageReleaseNotes>
-        <LangVersion>11</LangVersion>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

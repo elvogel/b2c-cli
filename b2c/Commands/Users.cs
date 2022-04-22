@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using b2c.Data;
 using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace b2c.Commands
@@ -39,9 +40,9 @@ namespace b2c.Commands
 
         public UserRepo Users { get; set; }
 
-        public CreateUser(UserRepo users)
+        public CreateUser(IOptions<UserRepo> users, IConsole console): base(console)
         {
-            Users = users;
+            Users = users.Value;
         }
         public async Task OnExecute(IConsole console)
         {
@@ -57,7 +58,7 @@ namespace b2c.Commands
                     var str = JsonConvert.SerializeObject(user,Formatting.Indented);
                     console.WriteLine(str);
                 }
-                else if (verbose)
+                else if (isVerbose)
                 {
                     var str = JsonConvert.SerializeObject(user,Formatting.None);
                     console.WriteLine(str);
@@ -82,7 +83,8 @@ namespace b2c.Commands
         [Option(Description = "The user ID (guid).")]
         public string userId { get; set; }
 
-        public async Task OnExecute(IConsole console)
+        public DeleteUser(IConsole iConsole): base(iConsole){}
+        public async Task OnExecute(IConsole iconsole)
         {
             var config = Config.GetConfig();
             var client = new GraphClient(config, console);
@@ -95,7 +97,8 @@ namespace b2c.Commands
     [Command(Name="list", Description = "list all users")]
     class ListUsers : BaseCommand
     {
-        public async Task OnExecute(IConsole console)
+        public ListUsers(IConsole iConsole): base(iConsole){}
+        public async Task OnExecute(IConsole iConsole)
         {
             var sw = Stopwatch.StartNew();
             var config = Config.GetConfig();
@@ -107,7 +110,7 @@ namespace b2c.Commands
                 var x = JsonConvert.SerializeObject(ret,Formatting.Indented);
                 console.WriteLine(ret);
             }
-            else if (verbose)
+            else if (isVerbose)
             {
                 var x = JsonConvert.SerializeObject(ret,Formatting.None);
                 console.WriteLine(ret);

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Options;
 
 namespace b2c.Commands
 {
@@ -10,7 +11,7 @@ namespace b2c.Commands
     class Groups
     {
         //the command for the subcommands
-        private Task OnExecute(IConsole console)
+        protected Task OnExecute()
         {
             return Task.CompletedTask;
         }
@@ -20,11 +21,11 @@ namespace b2c.Commands
     class ListGroups: BaseCommand
     {
         public GroupsRepo Groups { get; set; }
-        public ListGroups(GroupsRepo groups)
+        public ListGroups(IOptions<GroupsRepo> groups, IConsole console): base(console)
         {
-            Groups = groups;
+            Groups = groups.Value;
         }
-        public async Task OnExecute(IConsole console)
+        public async Task OnExecute()
         {
             var sw = Stopwatch.StartNew();
             console.WriteLine("getting groups...");
@@ -52,9 +53,9 @@ namespace b2c.Commands
 
         public UserRepo Users { get; set; }
 
-        public AddUserToGroup(UserRepo users)
+        public AddUserToGroup(IOptions<UserRepo> users)
         {
-            Users = users;
+            Users = users.Value;
         }
 
     public async Task OnExecute(IConsole console)
