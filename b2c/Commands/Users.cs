@@ -1,19 +1,19 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using b2c.Data;
 using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace b2c.Commands
-{
+namespace b2c.Commands;
+
+
     [Command("users", Description = "user commands")]
     [Subcommand(typeof(CreateUser),typeof(DeleteUser), typeof(ListUsers))]
     class Users
     {
-        private Task OnExecute(IConsole console)
+        private static Task OnExecute()
         {
             return Task.CompletedTask;
         }
@@ -37,6 +37,8 @@ namespace b2c.Commands
 
         [Option(ShortName = "upn", Description = "username for the tenant")]
         public string userPrincipalName { get; set; }
+        [Option(ShortName = "vf", LongName = "verboseFormat", Description = "Display full, formatted JSON object")]
+        public bool verboseFormat { get; set; }
 
         public UserRepo Users { get; set; }
 
@@ -44,13 +46,12 @@ namespace b2c.Commands
         {
             Users = users.Value;
         }
-        public async Task OnExecute(IConsole console)
+        public async Task OnExecute()
         {
             try
             {
                 var sw = Stopwatch.StartNew();
-                var config = Config.GetConfig();
-                console.WriteLine($"creating user {displayName}...");
+                verbose($"creating user {displayName}...");
                 var user = await Users.AddUser(firstName, lastName, displayName, password);
 
                 if (verboseFormat)
@@ -66,9 +67,7 @@ namespace b2c.Commands
                 else
                     console.WriteLine($"displayName: {user.DisplayName}, objectId: {user.Id}, userPrincipalName: {user.UserPrincipalName}");
 
-                if (!time) return;
-                sw.Stop();
-                console.WriteLine($"operation completed in {sw.ElapsedMilliseconds}ms");
+                record(sw);
             }
             catch (Exception ex)
             {
@@ -83,49 +82,70 @@ namespace b2c.Commands
         [Option(Description = "The user ID (guid).")]
         public string userId { get; set; }
 
-        public DeleteUser(IConsole iConsole): base(iConsole){}
+        private readonly UserRepo users;
+        public DeleteUser(IOptions<UserRepo> userRepo, IConsole iConsole) : base(iConsole)
+        {
+            users = userRepo.Value;
+        }
         public async Task OnExecute(IConsole iconsole)
         {
-            var config = Config.GetConfig();
-            var client = new GraphClient(config, console);
-            console.WriteLine($"deleting user {userId}...");
-            var ret = await client.DeleteUser(userId);
-            console.WriteLine(ret);
+            var sw = Stopwatch.StartNew();
+            verbose("deleting user {userId}...");
+            await users.DeleteUser(userId);
+            verbose($"user {userId} deleted.");
+            record(sw);
         }
     }
 
-    [Command(Name="list", Description = "list all users")]
+    [Command(Name = "list", Description = "list all users")]
     class ListUsers : BaseCommand
     {
-        public ListUsers(IConsole iConsole): base(iConsole){}
-        public async Task OnExecute(IConsole iConsole)
+        private readonly UserRepo users;
+
+        public ListUsers(IOptions<UserRepo> userRepo, IConsole iConsole) : base(iConsole)
+        {
+            users = userRepo.Value;
+        }
+
+        [Option(ShortName = "csv", Description = "output key values in CSV format")]
+        public bool Csv { get; set; }
+
+        [Option(ShortName = "h", LongName = "head", Description = "add a header to CSV output")]
+        public bool Head { get; set; }
+
+        [Option(ShortName = "json", Description = "output object list in JSON format")]
+        public bool Json { get; set; }
+
+        public async Task OnExecute()
         {
             var sw = Stopwatch.StartNew();
-            var config = Config.GetConfig();
-            var client = new GraphClient2(config, console);
-            console.WriteLine($"getting users...");
-            var ret = await client.ListUsers();
-            if (verboseFormat)
+            if (!Json && !Csv) write("getting users...");
+            var ret = await users.GetAllUsers();
+
+            if (Json)
             {
-                var x = JsonConvert.SerializeObject(ret,Formatting.Indented);
-                console.WriteLine(ret);
+                var x = JsonConvert.SerializeObject(ret, Formatting.Indented);
+                console.WriteLine(x);
             }
-            else if (isVerbose)
+            else if (Csv)
             {
-                var x = JsonConvert.SerializeObject(ret,Formatting.None);
-                console.WriteLine(ret);
+                if (Head) console.WriteLine("oid,upn,mailNickname");
+
+                foreach (var user in ret)
+                {
+                    console.WriteLine($"{user.Id},{user.UserPrincipalName},{user.MailNickname}");
+                }
             }
             else
             {
-                foreach (var user in ret.value)
+                foreach (var user in ret)
                 {
-                    console.WriteLine(
-                        $"{user.displayName} objectId: {user.id}, userPrincipalName: {user.userPrincipalName}, mailNickname: {user.displayName}");
+                    write(
+                        $"{user.DisplayName} objectId: {user.Id}, userPrincipalName: {user.UserPrincipalName}, mailNickname: {user.MailNickname}");
                 }
             }
-            sw.Stop();
-            if (!time) return;
-            console.WriteLine($"\noperation completed in {sw.ElapsedMilliseconds}ms");
+
+            if (!Csv && !Json) record(sw);
         }
+
     }
-}

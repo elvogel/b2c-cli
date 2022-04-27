@@ -6,10 +6,8 @@ namespace b2c.Commands
 {
     public abstract class BaseCommand
     {
-        [Option(ShortName = "vf", LongName = "verboseFormat", Description = "Display full, formatted JSON object")]
-        public bool verboseFormat { get; set; }
 
-        [Option(ShortName = "v", LongName = "isVerbose", Description = "display full JSON object properties")]
+        [Option(ShortName = "v", LongName = "isVerbose", Description = "display object properties")]
         public bool isVerbose { get; set; }
 
         [Option(ShortName = "t", LongName = "time", Description = "put the timestamp in the output")]
