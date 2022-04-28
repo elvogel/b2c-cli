@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using EPS.Extensions.B2CGraphUtil.Config;
 
 namespace b2c.Data;
 
-public class Environment
+public class Environment: GraphUtilConfig
 {
     /// <summary>
     /// The environment name.

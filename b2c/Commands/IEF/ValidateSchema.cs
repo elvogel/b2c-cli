@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 
 namespace b2c.Commands.IEF;
 
@@ -22,6 +23,7 @@ public class ValidateSchema: BaseCommand
 
     public async Task OnExecuteAsync()
     {
+        OnExecute();
         if (string.IsNullOrEmpty(pFile) || string.IsNullOrEmpty(Schema))
         {
             write("File and Schema are required parameters.");
@@ -60,26 +62,24 @@ public class ValidateSchema: BaseCommand
     {
         var oc = console.ForegroundColor;
 
-        if (e.Severity == XmlSeverityType.Warning)
+        switch (e.Severity)
         {
-            console.ForegroundColor = ConsoleColor.Yellow;
-            write($"WARNING: {e.Message}");
-        }
-        else if (e.Severity == XmlSeverityType.Error)
-        {
-            console.ForegroundColor = ConsoleColor.Red;
-            write($"ERROR: {e.Message}");
-        }
-        else
-        {
-            write(e.Message);
+            case XmlSeverityType.Warning:
+                console.ForegroundColor = ConsoleColor.Yellow;
+                write($"WARNING: {e.Message}");
+                break;
+            case XmlSeverityType.Error:
+                console.ForegroundColor = ConsoleColor.Red;
+                write($"ERROR: {e.Message}");
+                break;
+            default:
+                write(e.Message);
+                break;
         }
 
         console.ForegroundColor = oc;
 
     }
 
-    public ValidateSchema(IConsole iconsole) : base(iconsole)
-    {
-    }
+    public ValidateSchema(IConsole iconsole) : base(iconsole) { }
 }

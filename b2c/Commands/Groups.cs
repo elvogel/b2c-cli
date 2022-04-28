@@ -1,14 +1,14 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace b2c.Commands
 {
     [Command("groups", Description = "operations on groups")]
-    [Subcommand(typeof(ListGroups), typeof(AddUserToGroup))]
+    [Subcommand(typeof(ListGroups), typeof(AddUserToGroup), typeof(ListGroupMembers))]
     class Groups
     {
         //the command for the subcommands
@@ -32,32 +32,30 @@ namespace b2c.Commands
         [Option(ShortName = "json", Description = "output object list in JSON format")]
         public bool Json { get; set; }
 
-        public ListGroups(IOptions<GroupsRepo> groups, IConsole console): base(console)
+        public ListGroups(IConsole console): base(console) { }
+        public async Task OnExecuteAsync()
         {
-            Groups = groups.Value;
-        }
-        public async Task OnExecute()
-        {
+            OnExecute();
             var sw = Stopwatch.StartNew();
             if (!Csv && !Json) write("getting groups...");
-            var groups = await Groups.GetAllGroups();
+            var groupList = await Groups.GetAllGroups();
             
             if (Csv)
             {
                 if (Head) console.WriteLine($"oid,displayName,mail,description");
-                foreach (var group in groups)
+                foreach (var group in groupList)
                 {
                     console.WriteLine($"{group.Id},{group.DisplayName},{group.Mail},{group.Description}");
                 }
             }
             else if (Json)
             {
-                var x = JsonConvert.SerializeObject(groups, Formatting.Indented);
+                var x = JsonConvert.SerializeObject(groupList, Formatting.Indented);
                 console.WriteLine(x);
             }
             else
             {
-                foreach (var g in groups)
+                foreach (var g in groupList)
                 {
                     console.WriteLine($"{g.Id},{g.DisplayName}");
                 }
@@ -68,47 +66,39 @@ namespace b2c.Commands
     }
 
 
-    [Command("user", Description = "Add user to a group")]
-    class AddUserToGroup
+    [Command("add", Description = "Add user to a group")]
+    class AddUserToGroup: BaseCommand
     {
-        [Option(ShortName = "g", LongName = "group", Description = "the group's object ID")]
+        [Option(ShortName = "g", LongName = "gid", Description = "the group's object ID")]
         public string GroupId { get; set; }
 
-        [Option(ShortName = "u", LongName = "user", Description = "the user's object ID")]
+        [Option(ShortName = "u", LongName = "uid", Description = "the user's object ID")]
         public string UserId { get; set; }
 
         public UserRepo Users { get; set; }
 
-        public AddUserToGroup(IOptions<UserRepo> users)
-        {
-            Users = users.Value;
-        }
+        public AddUserToGroup(IConsole iConsole): base(iConsole) { }
 
-    public async Task OnExecute(IConsole console)
+    public async Task OnExecuteAsync()
         {
             var sw = Stopwatch.StartNew();
-            console.WriteLine("adding user to group...");
+            if (string.IsNullOrEmpty(GroupId) || string.IsNullOrEmpty(UserId))
+                throw new ArgumentException("need groupId and userId");
+            verbose($"adding user {UserId} to group {GroupId}...");
             await Users.AddToGroup(UserId, GroupId);
-            sw.Stop();
-            console.WriteLine($"operation completed in {sw.ElapsedMilliseconds}ms");
-
-
+            record(sw);
         }
     }
 
-    [Command("user", Description = "Add user to a group")]
+    [Command("listUsers", Description = "List users in a group")]
     class ListGroupMembers: BaseCommand
     {
-        private readonly GroupsRepo groups;
-        public ListGroupMembers(IOptions<GroupsRepo> groupsRepo, IConsole iConsole) : base(iConsole)
-        {
-            groups = groupsRepo.Value;
-        }
+        public ListGroupMembers(IConsole iConsole) : base(iConsole) { }
 
         [Option(ShortName = "g", LongName = "group", Description = "the group's object ID")]
         public string GroupId { get; set; }
         
-        public async Task Execute()
+        public async Task OnExecuteAsync()
         {
             var sw = Stopwatch.StartNew();
             var g = await groups.GetGroup(GroupId);

@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Configuration;
 using Environment = b2c.Data.Environment;
 
 namespace b2c.Commands.IEF;
@@ -12,8 +11,6 @@ namespace b2c.Commands.IEF;
 [Command(Name = "compile", Description = "compile IEF files for all the different Environments")]
 public class Compile: BaseCommand
 {
-    private readonly IConfiguration config;
-
     [Option(LongName = "inPath",ShortName = "i",
         Description = "the path containing the XML to compile",ShowInHelpText = true)]
     public string inPath { get; set; }
@@ -23,13 +20,13 @@ public class Compile: BaseCommand
     public string outPath { get; set; }
     
     
-    public Compile(IConfiguration configuration, IConsole iConsole) : base(iConsole)
+    public Compile(IConsole iConsole) : base(iConsole)
     {
-        config = configuration;
     }
 
-    public async Task OnExecute()
+    public async Task OnExecuteAsync()
     {
+        OnExecute();
         if (string.IsNullOrEmpty(inPath))
             throw new ArgumentException(nameof(inPath));
         var sw = Stopwatch.StartNew();
@@ -42,29 +39,26 @@ public class Compile: BaseCommand
             verbose($"outbound path not specified, using {inPath}");
         }
         
-        var envs = new List<Environment>();
-        config.GetSection("Environments").Bind(envs);
-
         CreateDirectories(envs);
 
         int i = 0;
-        foreach (var env in envs)
+        foreach (var e in envs)
         {
             i++;
-            await compileFiles(env);
+            await compileFiles(e);
         }
         verbose($"completed processing {i} environments");
         record(sw);
     }
 
-    protected void CreateDirectories(List<Data.Environment> envs)
+    protected void CreateDirectories(List<Environment> environments)
     {
-        foreach (var env in envs)
+        foreach (var e in environments)
         {
-            if (string.IsNullOrEmpty(env.Name))
+            if (string.IsNullOrEmpty(e.Name))
                 throw new ArgumentException("Every environment needs an environment name!");
 
-            var path = Path.Combine(outPath, env.Name);
+            var path = Path.Combine(outPath, e.Name);
             if (Directory.Exists(path)) verbose($"{path} exists");
             else
             {
@@ -74,7 +68,7 @@ public class Compile: BaseCommand
         }
     }
 
-    protected async Task compileFiles(Environment env)
+    protected async Task compileFiles(Environment environment)
     {
         var files = Directory.GetFiles(inPath, "*.xml");
         foreach (var file in files)
@@ -84,12 +78,12 @@ public class Compile: BaseCommand
             var txt = await File.ReadAllTextAsync(file);
 
             var i = 0;
-            if (env.Settings == null)
+            if (environment.Settings == null)
             {
-                write($"no settings detected for {env.Name}...");
+                write($"no settings detected for {environment.Name}...");
                 continue;
             }
-            foreach (var setting in env.Settings)
+            foreach (var setting in environment.Settings)
             {
                 var count = txt.Split(setting.Key).Length - 1;
                 var s = "{Settings:" + setting.Key + "}";
@@ -99,7 +93,7 @@ public class Compile: BaseCommand
                 i++;
             }
 
-            var outFile = Path.Combine(outPath,env.Name, fName);
+            var outFile = Path.Combine(outPath,environment.Name, fName);
             verbose($"{i} found settings processed, saving {file} to {outFile}");
             await File.WriteAllTextAsync(outFile, txt);
         }

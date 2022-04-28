@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -10,60 +9,54 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using b2c.Data;
 using EPS.B2C.IEF;
-using EPS.Extensions.B2CGraphUtil.Config;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace b2c.Commands.IEF;
 
-public class Publish: BaseCommand
+[Command(Name = "publish", Description = "publish policy files (in the sequence given) the specified environment")]
+public class Publish : BaseCommand
 {
-    [Option(ShortName = "p",LongName = "path",Description = "path to the folder containing the policy files")]
+    [Option(ShortName = "p", LongName = "path", Description = "path to the folder containing the XML files")]
     public string Folder { get; set; }
-    [Option(ShortName = "f", LongName = "files", Description = "comma-separated list of ordered files for publishing")]
-    public string FileSequence { get; set; }
-    [Option(ShortName = "e",LongName = "env", Description = "environment name from configuration to deploy into")]
-    public string EnvironmentName { get; set; }
-    protected readonly IConfiguration config;
-    protected readonly GraphUtilConfig guc;
 
-    public Publish(IConfiguration configuration, IOptions<GraphUtilConfig> graphUtilConfig,IConsole iconsole) : base(iconsole)
-    {
-        config = configuration;
-        guc = graphUtilConfig.Value;
-    }
+    [Option(ShortName = "s", LongName = "sequence",
+        Description = "a comma-separated, sequential list of file names for uploading")]
+    public string FileSequence { get; set; }
+
+
+    public Publish(IConsole iconsole) : base(iconsole) { }
 
     public async Task OnExecuteAsync()
     {
-        if (string.IsNullOrEmpty(Folder) || string.IsNullOrEmpty(FileSequence) || string.IsNullOrEmpty(EnvironmentName))
-        {
-            throw new ArgumentException("path, files and environment are required fields");
-        }
+        OnExecute();
+        if (string.IsNullOrEmpty(Folder) || string.IsNullOrEmpty(FileSequence) || string.IsNullOrEmpty(envName))
+            throw new ArgumentException("need directory path, environment name and file sequence!");
+
+        var tenant = env.Settings["Tenant"];
+        if (string.IsNullOrEmpty(tenant))
+            throw new ArgumentException($"Tenant setting needs to be specified in {envName} environment!");
+
+        var sw = Stopwatch.StartNew();
+        if (!tenant.Contains(".onmicrosoft.com")) tenant += ".onmicrosoft.com";
+        var clientId = guc.AppId;
+        var secret = guc.Secret;
+
+        var seq = FileSequence.Split(",");
 
         var list = new List<KeyValuePair<string, string>>
         {
-            new("grant_type", "client_credentials"),
             new("scope", "https://graph.microsoft.com/.default"),
-            new("client_id", guc.AppId),
-            new("client_secret", guc.Secret)
+            new("grant_type", "client_credentials"),
+            new("client_id", clientId),
+            new("client_secret", secret)
         };
-
-        var files = FileSequence.Split(",");
-        var envs = new List<Data.Environment>();
-        config.GetSection("Environments").Bind(envs);
-
-        var env = envs.FirstOrDefault(x => x.Name == EnvironmentName);
-        if (env == null) throw new ArgumentException($"Environment {EnvironmentName} wasn't found in config");
         var client = new HttpClient();
-        var res = await client.PostAsync($"https://login.microsoftonline.com/{env.Settings["Tenant"]}/oauth2/v2.0/token",
+        var tr = await client.PostAsync($"https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token",
             new FormUrlEncodedContent(list));
-        var json = await JsonDocument.ParseAsync(await res.Content.ReadAsStreamAsync());
+        var json = await JsonDocument.ParseAsync(await tr.Content.ReadAsStreamAsync());
         var token = json.Deserialize<Token>();
-        
-
         var xs = new XmlSerializer(typeof(TrustFrameworkPolicy));
-        foreach (var file in files)
+        foreach (var file in seq)
         {
             var fpath = Path.Combine(Folder, file);
             if (!File.Exists(fpath))
@@ -80,6 +73,7 @@ public class Publish: BaseCommand
                 write($"failed to deserialize policy from {fpath}");
                 continue;
             }
+
             var policyId = policy.PolicyId;
             write($"uploading policy {policyId}...");
             stm.Seek(0, SeekOrigin.Begin);
@@ -103,13 +97,18 @@ public class Publish: BaseCommand
                 write("command canceled due to errors.");
                 return;
             }
-
+            else
+            {
+                write($"{policyId} published successfully");
+            }
         }
-        
+
+        record(sw);
     }
 
     private string formatErr(string errMsg)
     {
         return errMsg.Replace(".The following error", ".\r\n\r\nThe following error");
     }
+
 }

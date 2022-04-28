@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using EPS.Extensions.B2CGraphUtil;
 using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace b2c.Commands;
@@ -11,13 +10,7 @@ namespace b2c.Commands;
 
     [Command("users", Description = "user commands")]
     [Subcommand(typeof(CreateUser),typeof(DeleteUser), typeof(ListUsers))]
-    class Users
-    {
-        private static Task OnExecute()
-        {
-            return Task.CompletedTask;
-        }
-    }
+    class Users { }
 
     [Command(Name="create",Description = "create the user")]
     class CreateUser: BaseCommand
@@ -31,23 +24,28 @@ namespace b2c.Commands;
 
         [Option(ShortName = "display",Description = "the user's display name")]
         public string displayName { get; set; }
+        
+        [Option(ShortName = "vf",Description = "display the user object in JSON")]
+        public bool verboseFormat { get; set; }
+        
+        [Option(ShortName = "csv",Description = "display user object details in CSV format")]
+        public bool CSV { get; set; }
+        
+        [Option(ShortName = "he",LongName = "header",Description = "display the header for CSV output")]
+        public bool csvHeader { get; set; }
 
         [Option(ShortName = "pass")]
         public string password { get; set; }
 
         [Option(ShortName = "upn", Description = "username for the tenant")]
         public string userPrincipalName { get; set; }
-        [Option(ShortName = "vf", LongName = "verboseFormat", Description = "Display full, formatted JSON object")]
-        public bool verboseFormat { get; set; }
 
         public UserRepo Users { get; set; }
 
-        public CreateUser(IOptions<UserRepo> users, IConsole console): base(console)
+        public CreateUser(IConsole console): base(console) { }
+        public async Task OnExecuteAsync()
         {
-            Users = users.Value;
-        }
-        public async Task OnExecute()
-        {
+            OnExecute();
             try
             {
                 var sw = Stopwatch.StartNew();
@@ -59,10 +57,11 @@ namespace b2c.Commands;
                     var str = JsonConvert.SerializeObject(user,Formatting.Indented);
                     console.WriteLine(str);
                 }
-                else if (isVerbose)
+                else if (CSV)
                 {
-                    var str = JsonConvert.SerializeObject(user,Formatting.None);
-                    console.WriteLine(str);
+                    if (csvHeader)
+                        console.WriteLine("objectId,displayName,upn");
+                    console.WriteLine($"{user.Id},{user.DisplayName},{user.UserPrincipalName}");
                 }
                 else
                     console.WriteLine($"displayName: {user.DisplayName}, objectId: {user.Id}, userPrincipalName: {user.UserPrincipalName}");
@@ -71,7 +70,7 @@ namespace b2c.Commands;
             }
             catch (Exception ex)
             {
-                console.WriteLine($"A {ex.GetType()} was caught: {ex.Message}");
+                write($"{ex.GetType()}: {ex.Message}");
             }
         }
     }
@@ -82,13 +81,10 @@ namespace b2c.Commands;
         [Option(Description = "The user ID (guid).")]
         public string userId { get; set; }
 
-        private readonly UserRepo users;
-        public DeleteUser(IOptions<UserRepo> userRepo, IConsole iConsole) : base(iConsole)
+        public DeleteUser(IConsole iConsole) : base(iConsole) { }
+        public async Task OnExecuteAsync()
         {
-            users = userRepo.Value;
-        }
-        public async Task OnExecute(IConsole iconsole)
-        {
+            OnExecute();
             var sw = Stopwatch.StartNew();
             verbose("deleting user {userId}...");
             await users.DeleteUser(userId);
@@ -100,12 +96,7 @@ namespace b2c.Commands;
     [Command(Name = "list", Description = "list all users")]
     class ListUsers : BaseCommand
     {
-        private readonly UserRepo users;
-
-        public ListUsers(IOptions<UserRepo> userRepo, IConsole iConsole) : base(iConsole)
-        {
-            users = userRepo.Value;
-        }
+        public ListUsers(IConsole iConsole) : base(iConsole) { }
 
         [Option(ShortName = "csv", Description = "output key values in CSV format")]
         public bool Csv { get; set; }
@@ -116,8 +107,9 @@ namespace b2c.Commands;
         [Option(ShortName = "json", Description = "output object list in JSON format")]
         public bool Json { get; set; }
 
-        public async Task OnExecute()
+        public async Task OnExecuteAsync()
         {
+            OnExecute();
             var sw = Stopwatch.StartNew();
             if (!Json && !Csv) write("getting users...");
             var ret = await users.GetAllUsers();
@@ -129,11 +121,11 @@ namespace b2c.Commands;
             }
             else if (Csv)
             {
-                if (Head) console.WriteLine("oid,upn,mailNickname");
+                if (Head) console.WriteLine("oid,upn,displayName,mailNickname");
 
                 foreach (var user in ret)
                 {
-                    console.WriteLine($"{user.Id},{user.UserPrincipalName},{user.MailNickname}");
+                    console.WriteLine($"{user.Id},{user.UserPrincipalName},{user.DisplayName},{user.MailNickname}");
                 }
             }
             else
@@ -141,7 +133,7 @@ namespace b2c.Commands;
                 foreach (var user in ret)
                 {
                     write(
-                        $"{user.DisplayName} objectId: {user.Id}, userPrincipalName: {user.UserPrincipalName}, mailNickname: {user.MailNickname}");
+                        $"{user.DisplayName} objectId: {user.Id}, userPrincipalName: {user.UserPrincipalName},displayName: {user.DisplayName}, mailNickname: {user.MailNickname}");
                 }
             }
 
