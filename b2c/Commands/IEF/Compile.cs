@@ -7,7 +7,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Environment = b2c.Data.Environment;
 
-namespace b2c.Commands;
+namespace b2c.Commands.IEF;
 
 [Command(Name = "compile", Description = "compile IEF files for all the different Environments")]
 public class Compile: BaseCommand
@@ -84,6 +84,11 @@ public class Compile: BaseCommand
             var txt = await File.ReadAllTextAsync(file);
 
             var i = 0;
+            if (env.Settings == null)
+            {
+                write($"no settings detected for {env.Name}...");
+                continue;
+            }
             foreach (var setting in env.Settings)
             {
                 var count = txt.Split(setting.Key).Length - 1;

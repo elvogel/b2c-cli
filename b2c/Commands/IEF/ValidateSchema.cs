@@ -6,7 +6,7 @@ using System.Xml;
 using System.Xml.Schema;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace b2c.Commands;
+namespace b2c.Commands.IEF;
 
 /// <summary>
 /// Validate a TrustPolicy file against the schema.
