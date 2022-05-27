@@ -23,7 +23,6 @@ public class ValidateSchema: BaseCommand
 
     public async Task OnExecuteAsync()
     {
-        OnExecute();
         if (string.IsNullOrEmpty(pFile) || string.IsNullOrEmpty(Schema))
         {
             write("File and Schema are required parameters.");

@@ -45,7 +45,7 @@ namespace b2c.Commands;
         public CreateUser(IConsole console): base(console) { }
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            RepoInit();
             try
             {
                 var sw = Stopwatch.StartNew();
@@ -84,7 +84,7 @@ namespace b2c.Commands;
         public DeleteUser(IConsole iConsole) : base(iConsole) { }
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            RepoInit();
             var sw = Stopwatch.StartNew();
             verbose("deleting user {userId}...");
             await users.DeleteUser(userId);
@@ -109,7 +109,7 @@ namespace b2c.Commands;
 
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            RepoInit();
             var sw = Stopwatch.StartNew();
             if (!Json && !Csv) write("getting users...");
             var ret = await users.GetAllUsers();

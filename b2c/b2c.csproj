@@ -16,7 +16,6 @@
         <Product>b2c command line tool</Product>
         <AssemblyVersion>6.0.0</AssemblyVersion>
         <FileVersion>6.0.0</FileVersion>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageReleaseNotes>upgrade to .NET Core 6 and add IEF commands</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
         <Copyright>2007-2022 Endpoint Systems. All rights reserved.</Copyright>
@@ -47,7 +46,7 @@
             <Visible>false</Visible>
             <PackagePath>/</PackagePath>
         </None>
-        <None Include="$(SolutionDir)README.md" Pack="true" PackagePath="\" />
+        <None Include="../README.md" Pack="true" PackagePath="\" />
       <None Update="b2c.json">
           <Pack>false</Pack>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -41,35 +41,36 @@ The application requires a `b2c.json` configuration file to operate. It should l
 {
   "Environments": [
     {
-      "Name": "Development" ,
-      "Production": false ,
-      "AppId": "11111111-2222-3333-4444-660ac747fbf1" ,
-      "Tenant": "yourtenantname.onmicrosoft.com" ,
-      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f" ,
+      "Name": "Development",
+      "Production": false,
+      "AppId": "11111111-2222-3333-4444-660ac747fbf1",
+      "Tenant": "yourtenantname.onmicrosoft.com",
+      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f",
       "Secret": "randomsecretfromAppregistration",
       "Settings": {
-        "InstrumentationKey": "" ,
-        "IdentityExperienceFrameworkAppId": "another-guid-from-the-directory" ,
-        "ProxyIdentityExperienceFrameworkAppId": "Your dev environment AD Proxy app Id" ,
+        "InstrumentationKey": "",
+        "IdentityExperienceFrameworkAppId": "another-guid-from-the-directory",
+        "ProxyIdentityExperienceFrameworkAppId": "Your dev environment AD Proxy app Id",
         "FacebookAppId": "0",
         "SomeCustomSettingUsedInThePolicyXmlFiles": "abcdefg",
         "IdToken": "id_token"
-
       }
-    } ,
+    },
     {
-      "Name": "Prod" ,
-      "Production": true ,
-      "AppId": "11111111-2222-3333-4444-660ac747fbf1" ,
-      "Tenant": "yourtenantname.onmicrosoft.com" ,
-      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f" ,
+      "Name": "Prod",
+      "Production": true,
+      "AppId": "11111111-2222-3333-4444-660ac747fbf1",
+      "Tenant": "yourtenantname.onmicrosoft.com",
+      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f",
       "Secret": "randomsecretfromAppregistration",
       "Settings": {
-        "IdentityExperienceFrameworkAppId": "Your prod environment AD app Id" ,
-        "ProxyIdentityExperienceFrameworkAppId": "Your AD prod environment Proxy app Id" ,
+        "IdentityExperienceFrameworkAppId": "Your prod environment AD app Id",
+        "ProxyIdentityExperienceFrameworkAppId": "Your AD prod environment Proxy app Id",
         "FacebookAppId": "0"
       }
-    } ,
+    }
+  ]
+}
 ```
 All settings outside the `Settings` section are required values and used for administrative tasks against the directory itself. Everything inside of the `Settings` is optional and can be whatever basic value you'd like it to be. Whatever you put in here like so:
 
@@ -89,8 +90,7 @@ All settings outside the `Settings` section are required values and used for adm
     <Item Key="response_types">{Settings:IdToken}</Item>
     <Item Key="response_mode">query</Item>
     <Item Key="scope">email openid</Item>
-
-```
+  ```
 
 In this example:
 - we replaced `{Settings:Tenant}` and `{Settings:TenantId}` with the `Tenant` and `TenantId` settings in the `Environment` object root. This design inconsistency is for convenience - those values are required for directory operations, but it's redundant to put them in `Settings` again, so we just 'pretend' like they're there :)
@@ -137,7 +137,8 @@ Run 'users [command] -?|-h|--help' for more information about a command.
 
 ```
 ### Group Commands
-```bash
+
+```
 ./b2c groups -?
 
 ---
@@ -158,7 +159,7 @@ Run 'groups [command] -?|-h|--help' for more information about a command.
 ```
 ### IEF Commands
 
-```bash
+```
 Identity Experience Framework (IEF) commands
 
 Usage: b2c ief [command] [options]

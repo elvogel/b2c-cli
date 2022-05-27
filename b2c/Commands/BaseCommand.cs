@@ -39,7 +39,8 @@ namespace b2c.Commands
 
         protected BaseCommand(IConsole iconsole)
         {
-            var cfgPath = configPath ?? Path.Combine(Assembly.GetExecutingAssembly().Location, "b2c.json");
+            // ReSharper disable once ConstantNullCoalescingCondition
+            var cfgPath = configPath ?? Path.Combine(AppContext.BaseDirectory, "b2c.json");
             if (!File.Exists(cfgPath))
                 throw new ArgumentException($"config file {cfgPath} does not exist.");
             config = new ConfigurationBuilder()
@@ -50,20 +51,19 @@ namespace b2c.Commands
             console = iconsole;
         }
 
-        protected void OnExecute()
+        protected void RepoInit()
         {
-            if (string.IsNullOrEmpty(envName))
-                throw new ArgumentException("Environment name need to be set!");
-            
-            envs = new List<Data.Environment>();
-            config.GetSection("Environments").Bind(envs);
-
+            Init();
             env = envs.FirstOrDefault(x => x.Name.ToLower().Equals(envName.ToLower()));
-
             guc = env ?? throw new ArgumentException($"environment '{envName}' is not found in config");
-
             users = new UserRepo(guc);
             groups = new GroupsRepo(guc);
+            
+        }
+        protected void Init()
+        {
+            envs = new List<Data.Environment>();
+            config.GetSection("Environments").Bind(envs);
 
         }
 
