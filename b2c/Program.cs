@@ -18,16 +18,6 @@ namespace b2c
         static async Task<int> Main(string[] args)
         {
             return await CommandLineApplication.ExecuteAsync<Program>(args);
-            /*
-            var app = new CommandLineApplication<B2C>();
-            app.Conventions
-                .UseDefaultConventions()
-                .UseArgumentAttributes()
-                ;
-
-            app.Parse(args);
-            await app.ExecuteAsync(args);
-            */
         }
 
         public int OnExecute(CommandLineApplication app, IConsole console)

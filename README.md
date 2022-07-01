@@ -105,7 +105,7 @@ If you're an advanced policy developer, here's how the values in the [Active Dir
 ## Commands
 The following is a demonstration of some of the available commands.
   
-```bash
+```
 Usage: b2c [command] [options]
 
 Options:
@@ -120,7 +120,7 @@ Run 'b2c [command] -?|-h|--help' for more information about a command.
 ```
 
 ### User Commands
-```bash
+```
 
 user commands
 
@@ -151,7 +151,9 @@ Options:
   -?|-h|--help  Show help information.
 
 Commands:
+  create        create a new group - returns group id
   add           Add user to a group
+  delete        delete a group from the tenant
   list          list all available groups
   listUsers     List users in a group
 
@@ -172,7 +174,8 @@ Commands:
   compile         compile IEF files for all the different Environments
   publish         publish policy files (in the sequence given) the specified environment
   validateSchema  validate a file against the TrustPolicy schema
-
+  compublish      compile + publish commands
+  
 Run 'ief [command] -?|-h|--help' for more information about a command.
 
 ```
