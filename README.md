@@ -18,7 +18,8 @@ Outside of the [Azure AD B2C documentation](https://docs.microsoft.com/en-us/azu
 - [Azure AD B2C Community](https://azure-ad-b2c.github.io/azureadb2ccommunity.io/)
 - [Azure AD B2C GitHub](https://github.com/azure-ad-b2c)
 - [Azure AD B2C Custom Policies with the IEF](https://github.com/Azure-Samples/active-directory-b2c-advanced-policies)
-
+- [Azure AD B2C Custom Policies - Deep Dive on Custom Policy Schema (PDF)](https://download.microsoft.com/download/3/6/1/36187D50-A693-4547-848A-176F17AE1213/Deep%20Dive%20on%20Azure%20AD%20B2C%20Custom%20Policies/Azure%20AD%20B2C%20Custom%20Policies%20-%20Deep%20Dive%20on%20Custom%20Policy%20Schema.pdf)
+- [Rory Braybrook's Blog](https://rbrayb.medium.com/) 
 
 ## Getting Started
 
@@ -75,7 +76,7 @@ The application requires a `b2c.json` configuration file to operate. It should l
 All settings outside the `Settings` section are required values and used for administrative tasks against the directory itself. Everything inside of the `Settings` is optional and can be whatever basic value you'd like it to be. Whatever you put in here like so:
 
 
-```xml
+```
 <TechnicalProfile Id="login-NonInteractive">
   <DisplayName>Local Account SignIn</DisplayName>
   <Protocol Name="OpenIdConnect" />
@@ -90,7 +91,7 @@ All settings outside the `Settings` section are required values and used for adm
     <Item Key="response_types">{Settings:IdToken}</Item>
     <Item Key="response_mode">query</Item>
     <Item Key="scope">email openid</Item>
-  ```
+```
 
 In this example:
 - we replaced `{Settings:Tenant}` and `{Settings:TenantId}` with the `Tenant` and `TenantId` settings in the `Environment` object root. This design inconsistency is for convenience - those values are required for directory operations, but it's redundant to put them in `Settings` again, so we just 'pretend' like they're there :)

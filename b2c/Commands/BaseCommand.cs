@@ -51,11 +51,10 @@ namespace b2c.Commands
             console = iconsole;
         }
 
+        
         protected void RepoInit()
         {
-            Init();
-            env = envs.FirstOrDefault(x => x.Name.ToLower().Equals(envName.ToLower()));
-            guc = env ?? throw new ArgumentException($"environment '{envName}' is not found in config");
+            EnvInit();
             users = new UserRepo(guc);
             groups = new GroupsRepo(guc);
             
@@ -65,6 +64,13 @@ namespace b2c.Commands
             envs = new List<Data.Environment>();
             config.GetSection("Environments").Bind(envs);
 
+        }
+
+        protected void EnvInit()
+        {
+            Init();
+            env = envs.FirstOrDefault(x => x.Name.ToLower().Equals(envName.ToLower()));
+            guc = env ?? throw new ArgumentException($"environment '{envName}' is not found in config");
         }
 
         protected void record(Stopwatch sw)

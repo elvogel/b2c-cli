@@ -12,7 +12,7 @@ namespace b2c.Commands.IEF;
 /// <summary>
 /// Validate a TrustPolicy file against the schema.
 /// </summary>
-[Command(Name="validateSchema",Description = "validate a file against the TrustPolicy schema")]
+[Command(Name="validate",Description = "validate a file against the TrustPolicy schema")]
 public class ValidateSchema: BaseCommand
 {
     [Option(LongName = "file",ShortName = "f",Description = "file to validate",ShowInHelpText = true)]
