@@ -8,21 +8,21 @@ using Newtonsoft.Json;
 namespace b2c.Commands
 {
     [Command("groups", Description = "operations on groups")]
-    [Subcommand(typeof(ListGroups), typeof(AddUserToGroup), typeof(ListGroupMembers))]
+    [Subcommand(typeof(ListGroups), typeof(AddUserToGroup), 
+        typeof(ListGroupMembers), typeof(CreateGroup), typeof(DeleteGroup))]
     class Groups
     {
         //the command for the subcommands
-        protected Task OnExecute()
+        public void OnExecute(IConsole console)
         {
-            return Task.CompletedTask;
+            console.Error.WriteLine("You must specify a command. See --help for details.");
         }
 
     }
+    
     [Command("list",Description = "list all available groups")]
     class ListGroups: BaseCommand
     {
-        public GroupsRepo Groups { get; set; }
-        
         [Option(ShortName = "csv", Description = "output key values in CSV format")]
         public bool Csv { get; set; }
 
@@ -32,15 +32,18 @@ namespace b2c.Commands
         [Option(ShortName = "json", Description = "output object list in JSON format")]
         public bool Json { get; set; }
 
-        public ListGroups(IConsole console): base(console) { }
+        public ListGroups(IConsole console): base(console) {}
         public async Task OnExecuteAsync()
         {
-            RepoInit();
             var sw = Stopwatch.StartNew();
+            RepoInit();
             if (!Csv && !Json) write("getting groups...");
-            var groupList = await Groups.GetAllGroups();
-            
-            if (Csv)
+            var groupList = await groups.GetAllGroups();
+            if (groupList.Count == 0)
+            {
+                write("no groups");
+            }
+            else if (Csv)
             {
                 if (Head) console.WriteLine($"oid,displayName,mail,description");
                 foreach (var group in groupList)
@@ -65,6 +68,45 @@ namespace b2c.Commands
         }
     }
 
+    [Command("create",Description = "create a new group")]
+    class CreateGroup : BaseCommand
+    {
+        [Option(ShortName = "d",LongName = "desc", Description = "group description")]
+        public string Description { get; set; }
+
+        public CreateGroup(IConsole iconsole) : base(iconsole)
+        {
+        }
+        [Option(ShortName = "n",Description = "group name",LongName = "groupName")]
+        public string GroupName { get; set; }
+
+        public async Task OnExecuteAsync()
+        {
+            var sw = Stopwatch.StartNew();
+            RepoInit();
+            var ret = await groups.CreateGroup(GroupName);
+            write(ret.Id);
+            record(sw);
+        }
+    }
+
+    [Command("delete",Description = "delete a group")]
+    class DeleteGroup: BaseCommand
+    {
+        [Option(ShortName = "id",Description = "The group objectId.")]
+        public string Id { get; set; }
+        public async Task OnExecuteAsync()
+        {
+            var sw = Stopwatch.StartNew();
+            RepoInit();
+            await groups.DeleteGroup(Id);
+            record(sw);
+        }
+
+        public DeleteGroup(IConsole iconsole) : base(iconsole)
+        {
+        }
+    }
 
     [Command("add", Description = "Add user to a group")]
     class AddUserToGroup: BaseCommand
@@ -82,6 +124,7 @@ namespace b2c.Commands
     public async Task OnExecuteAsync()
         {
             var sw = Stopwatch.StartNew();
+            RepoInit();
             if (string.IsNullOrEmpty(GroupId) || string.IsNullOrEmpty(UserId))
                 throw new ArgumentException("need groupId and userId");
             verbose($"adding user {UserId} to group {GroupId}...");
@@ -101,6 +144,7 @@ namespace b2c.Commands
         public async Task OnExecuteAsync()
         {
             var sw = Stopwatch.StartNew();
+            RepoInit(); 
             var g = await groups.GetGroup(GroupId);
             verbose($"group {g.DisplayName} has {g.Members.Count} members:");
             

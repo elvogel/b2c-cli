@@ -5,4 +5,10 @@ namespace b2c.Commands;
 
 [Command("ief", Description = "Identity Experience Framework (IEF) commands")]
 [Subcommand(typeof(ValidateSchema), typeof(Compile), typeof(Publish), typeof(CompilePublish))]
-public class Ief { }
+class Ief
+{
+    public void OnExecute(IConsole console)
+    {
+        console.Error.WriteLine("You must specify a command. See --help for details.");
+    }    
+}

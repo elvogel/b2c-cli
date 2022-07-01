@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using EPS.Extensions.B2CGraphUtil;
 using EPS.Extensions.B2CGraphUtil.Config;
 using McMaster.Extensions.CommandLineUtils;
@@ -22,7 +21,7 @@ namespace b2c.Commands
         [Option(ShortName = "t", LongName = "time", Description = "put the timestamp in the output")]
         public bool time { get; set; }
 
-        [Option(ShortName = "e", LongName = "environment", Inherited = true,
+        [Option(ShortName = "e", LongName = "environment", 
             Description = "the environment (from configuration) to publish into")]
         public string envName { get; set; }
 
@@ -39,6 +38,7 @@ namespace b2c.Commands
 
         protected BaseCommand(IConsole iconsole)
         {
+            
             // ReSharper disable once ConstantNullCoalescingCondition
             var cfgPath = configPath ?? Path.Combine(AppContext.BaseDirectory, "b2c.json");
             if (!File.Exists(cfgPath))
@@ -57,7 +57,6 @@ namespace b2c.Commands
             EnvInit();
             users = new UserRepo(guc);
             groups = new GroupsRepo(guc);
-            
         }
         protected void Init()
         {
@@ -76,7 +75,7 @@ namespace b2c.Commands
         protected void record(Stopwatch sw)
         {
             sw.Stop();
-            if (time) write($"command completed in {sw.ElapsedMilliseconds} ms");
+            write($"command completed in {sw.ElapsedMilliseconds} ms");
         }
 
         protected void verbose(string line)

@@ -23,7 +23,9 @@ public class Publish : BaseCommand
     [Option(ShortName = "p", LongName = "path", Description = "path to the folder containing the XML files")]
     public string Folder { get; set; }
 
-    public Publish(IConsole iconsole) : base(iconsole) { }
+    public Publish(IConsole iconsole) : base(iconsole)
+    {
+    }
     
     public string[] FileSequence { get; set; }
 

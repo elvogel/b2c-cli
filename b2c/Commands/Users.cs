@@ -8,9 +8,15 @@ using Newtonsoft.Json;
 namespace b2c.Commands;
 
 
-    [Command("users", Description = "user commands")]
-    [Subcommand(typeof(CreateUser),typeof(DeleteUser), typeof(ListUsers))]
-    class Users { }
+[Command("users", Description = "user commands")]
+[Subcommand(typeof(CreateUser), typeof(DeleteUser), typeof(ListUsers))]
+class Users
+{
+    public void OnExecute(IConsole console)
+    {
+        console.Error.WriteLine("You must specify a command. See --help for details.");
+    }
+}
 
     [Command(Name="create",Description = "create the user")]
     class CreateUser: BaseCommand
@@ -114,6 +120,10 @@ namespace b2c.Commands;
             if (!Json && !Csv) write("getting users...");
             var ret = await users.GetAllUsers();
 
+            if (ret.Count == 0)
+            {
+                write("no users");
+            }
             if (Json)
             {
                 var x = JsonConvert.SerializeObject(ret, Formatting.Indented);
