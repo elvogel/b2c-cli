@@ -18,7 +18,8 @@ Outside of the [Azure AD B2C documentation](https://docs.microsoft.com/en-us/azu
 - [Azure AD B2C Community](https://azure-ad-b2c.github.io/azureadb2ccommunity.io/)
 - [Azure AD B2C GitHub](https://github.com/azure-ad-b2c)
 - [Azure AD B2C Custom Policies with the IEF](https://github.com/Azure-Samples/active-directory-b2c-advanced-policies)
-
+- [Azure AD B2C Custom Policies - Deep Dive on Custom Policy Schema (PDF)](https://download.microsoft.com/download/3/6/1/36187D50-A693-4547-848A-176F17AE1213/Deep%20Dive%20on%20Azure%20AD%20B2C%20Custom%20Policies/Azure%20AD%20B2C%20Custom%20Policies%20-%20Deep%20Dive%20on%20Custom%20Policy%20Schema.pdf)
+- [Rory Braybrook's Blog](https://rbrayb.medium.com/) 
 
 ## Getting Started
 
@@ -41,40 +42,41 @@ The application requires a `b2c.json` configuration file to operate. It should l
 {
   "Environments": [
     {
-      "Name": "Development" ,
-      "Production": false ,
-      "AppId": "11111111-2222-3333-4444-660ac747fbf1" ,
-      "Tenant": "yourtenantname.onmicrosoft.com" ,
-      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f" ,
+      "Name": "Development",
+      "Production": false,
+      "AppId": "11111111-2222-3333-4444-660ac747fbf1",
+      "Tenant": "yourtenantname.onmicrosoft.com",
+      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f",
       "Secret": "randomsecretfromAppregistration",
       "Settings": {
-        "InstrumentationKey": "" ,
-        "IdentityExperienceFrameworkAppId": "another-guid-from-the-directory" ,
-        "ProxyIdentityExperienceFrameworkAppId": "Your dev environment AD Proxy app Id" ,
+        "InstrumentationKey": "",
+        "IdentityExperienceFrameworkAppId": "another-guid-from-the-directory",
+        "ProxyIdentityExperienceFrameworkAppId": "Your dev environment AD Proxy app Id",
         "FacebookAppId": "0",
         "SomeCustomSettingUsedInThePolicyXmlFiles": "abcdefg",
         "IdToken": "id_token"
-
       }
-    } ,
+    },
     {
-      "Name": "Prod" ,
-      "Production": true ,
-      "AppId": "11111111-2222-3333-4444-660ac747fbf1" ,
-      "Tenant": "yourtenantname.onmicrosoft.com" ,
-      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f" ,
+      "Name": "Prod",
+      "Production": true,
+      "AppId": "11111111-2222-3333-4444-660ac747fbf1",
+      "Tenant": "yourtenantname.onmicrosoft.com",
+      "TenantId": "22222222-3333-4444-5555-465f71ae2d0f",
       "Secret": "randomsecretfromAppregistration",
       "Settings": {
-        "IdentityExperienceFrameworkAppId": "Your prod environment AD app Id" ,
-        "ProxyIdentityExperienceFrameworkAppId": "Your AD prod environment Proxy app Id" ,
+        "IdentityExperienceFrameworkAppId": "Your prod environment AD app Id",
+        "ProxyIdentityExperienceFrameworkAppId": "Your AD prod environment Proxy app Id",
         "FacebookAppId": "0"
       }
-    } ,
+    }
+  ]
+}
 ```
 All settings outside the `Settings` section are required values and used for administrative tasks against the directory itself. Everything inside of the `Settings` is optional and can be whatever basic value you'd like it to be. Whatever you put in here like so:
 
 
-```xml
+```
 <TechnicalProfile Id="login-NonInteractive">
   <DisplayName>Local Account SignIn</DisplayName>
   <Protocol Name="OpenIdConnect" />
@@ -89,7 +91,6 @@ All settings outside the `Settings` section are required values and used for adm
     <Item Key="response_types">{Settings:IdToken}</Item>
     <Item Key="response_mode">query</Item>
     <Item Key="scope">email openid</Item>
-
 ```
 
 In this example:
@@ -104,7 +105,7 @@ If you're an advanced policy developer, here's how the values in the [Active Dir
 ## Commands
 The following is a demonstration of some of the available commands.
   
-```bash
+```
 Usage: b2c [command] [options]
 
 Options:
@@ -119,7 +120,7 @@ Run 'b2c [command] -?|-h|--help' for more information about a command.
 ```
 
 ### User Commands
-```bash
+```
 
 user commands
 
@@ -137,7 +138,8 @@ Run 'users [command] -?|-h|--help' for more information about a command.
 
 ```
 ### Group Commands
-```bash
+
+```
 ./b2c groups -?
 
 ---
@@ -149,7 +151,9 @@ Options:
   -?|-h|--help  Show help information.
 
 Commands:
+  create        create a new group - returns group id
   add           Add user to a group
+  delete        delete a group from the tenant
   list          list all available groups
   listUsers     List users in a group
 
@@ -158,7 +162,7 @@ Run 'groups [command] -?|-h|--help' for more information about a command.
 ```
 ### IEF Commands
 
-```bash
+```
 Identity Experience Framework (IEF) commands
 
 Usage: b2c ief [command] [options]
@@ -170,7 +174,8 @@ Commands:
   compile         compile IEF files for all the different Environments
   publish         publish policy files (in the sequence given) the specified environment
   validateSchema  validate a file against the TrustPolicy schema
-
+  compublish      compile + publish commands
+  
 Run 'ief [command] -?|-h|--help' for more information about a command.
 
 ```
