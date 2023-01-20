@@ -8,9 +8,16 @@ using Newtonsoft.Json;
 namespace b2c.Commands;
 
 
-    [Command("users", Description = "user commands")]
-    [Subcommand(typeof(CreateUser),typeof(DeleteUser), typeof(ListUsers))]
-    class Users { }
+[Command("users", Description = "user commands")]
+[Subcommand(typeof(CreateUser), typeof(DeleteUser), typeof(ListUsers))]
+class Users
+{
+    public Task OnExecuteAsync()
+    {
+        return Task.CompletedTask;
+    }
+    
+}
 
     [Command(Name="create",Description = "create the user")]
     class CreateUser: BaseCommand
@@ -45,7 +52,7 @@ namespace b2c.Commands;
         public CreateUser(IConsole console): base(console) { }
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            Execute();
             try
             {
                 var sw = Stopwatch.StartNew();
@@ -80,12 +87,40 @@ namespace b2c.Commands;
     {
         [Option(Description = "The user ID (guid).")]
         public string userId { get; set; }
+        
+        [Option(ShortName = "a", Description = "delete all users")]
+        public bool allUsers { get; set; }
 
         public DeleteUser(IConsole iConsole) : base(iConsole) { }
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            Execute();
             var sw = Stopwatch.StartNew();
+
+            if (allUsers)
+            {
+                var list = await users.GetAllUsers();
+                verbose($"deleting {list.Count} users...");
+                foreach (var user in list)
+                {
+                    if (user.UserPrincipalName.Contains("endpoint"))
+                    {
+                        write("----------SKIPPING ENDPOINT SYSTEMS----------");
+                        continue;
+                    }
+                    verbose($"deleting {user.UserPrincipalName}");
+                    await users.DeleteUser(user.Id);
+                }
+
+                record(sw);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                write("must provide userId to delete!");
+                return;
+            }
             verbose("deleting user {userId}...");
             await users.DeleteUser(userId);
             verbose($"user {userId} deleted.");
@@ -109,11 +144,11 @@ namespace b2c.Commands;
 
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            Execute();
             var sw = Stopwatch.StartNew();
             if (!Json && !Csv) write("getting users...");
             var ret = await users.GetAllUsers();
-
+            base.write($"found {ret.Count} users.");
             if (Json)
             {
                 var x = JsonConvert.SerializeObject(ret, Formatting.Indented);

@@ -28,7 +28,7 @@ public class Publish : BaseCommand
 
     public async Task OnExecuteAsync()
     {
-        OnExecute();
+        Execute();
         if (string.IsNullOrEmpty(Folder) || string.IsNullOrEmpty(FileSequence) || string.IsNullOrEmpty(envName))
             throw new ArgumentException("need directory path, environment name and file sequence!");
 

@@ -35,7 +35,7 @@ namespace b2c.Commands
         public ListGroups(IConsole console): base(console) { }
         public async Task OnExecuteAsync()
         {
-            OnExecute();
+            Execute();
             var sw = Stopwatch.StartNew();
             if (!Csv && !Json) write("getting groups...");
             var groupList = await Groups.GetAllGroups();

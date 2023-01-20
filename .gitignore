@@ -11,7 +11,8 @@ appsettings*.json
 *.user
 *.userosscache
 *.sln.docstates
-
+b2cdev.sln
+b2cdev.csproj
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

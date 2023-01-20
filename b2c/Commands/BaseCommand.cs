@@ -39,7 +39,7 @@ namespace b2c.Commands
 
         protected BaseCommand(IConsole iconsole)
         {
-            var cfgPath = configPath ?? Path.Combine(Assembly.GetExecutingAssembly().Location, "b2c.json");
+            var cfgPath = configPath ?? Path.Combine(new FileInfo(Assembly.GetExecutingAssembly().Location).Directory.FullName, "b2c.json");
             if (!File.Exists(cfgPath))
                 throw new ArgumentException($"config file {cfgPath} does not exist.");
             config = new ConfigurationBuilder()
@@ -50,11 +50,11 @@ namespace b2c.Commands
             console = iconsole;
         }
 
-        protected void OnExecute()
+        protected void Execute()
         {
             if (string.IsNullOrEmpty(envName))
                 throw new ArgumentException("Environment name need to be set!");
-            
+
             envs = new List<Data.Environment>();
             config.GetSection("Environments").Bind(envs);
 

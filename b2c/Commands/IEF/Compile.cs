@@ -26,7 +26,7 @@ public class Compile: BaseCommand
 
     public async Task OnExecuteAsync()
     {
-        OnExecute();
+        Execute();
         if (string.IsNullOrEmpty(inPath))
             throw new ArgumentException(nameof(inPath));
         var sw = Stopwatch.StartNew();
