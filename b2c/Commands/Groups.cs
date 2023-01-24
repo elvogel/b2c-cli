@@ -8,7 +8,8 @@ using Newtonsoft.Json;
 namespace b2c.Commands
 {
     [Command("groups", Description = "operations on groups")]
-    [Subcommand(typeof(ListGroups), typeof(AddUserToGroup), typeof(ListGroupMembers))]
+    [Subcommand(typeof(ListGroups), typeof(AddUserToGroup), 
+        typeof(ListGroupMembers), typeof(CreateGroup))]
     class Groups
     {
         //the command for the subcommands
@@ -21,7 +22,6 @@ namespace b2c.Commands
     [Command("list",Description = "list all available groups")]
     class ListGroups: BaseCommand
     {
-        public GroupsRepo Groups { get; set; }
         
         [Option(ShortName = "csv", Description = "output key values in CSV format")]
         public bool Csv { get; set; }
@@ -38,7 +38,7 @@ namespace b2c.Commands
             Execute();
             var sw = Stopwatch.StartNew();
             if (!Csv && !Json) write("getting groups...");
-            var groupList = await Groups.GetAllGroups();
+            var groupList = await groups.GetAllGroups();
             
             if (Csv)
             {
@@ -61,7 +61,8 @@ namespace b2c.Commands
                 }
             }
          
-            if (!Csv && !Json) record(sw);
+            //if (!Csv && !Json)
+             record(sw);
         }
     }
 
@@ -75,17 +76,16 @@ namespace b2c.Commands
         [Option(ShortName = "u", LongName = "uid", Description = "the user's object ID")]
         public string UserId { get; set; }
 
-        public UserRepo Users { get; set; }
-
         public AddUserToGroup(IConsole iConsole): base(iConsole) { }
 
     public async Task OnExecuteAsync()
         {
+            Execute();
             var sw = Stopwatch.StartNew();
             if (string.IsNullOrEmpty(GroupId) || string.IsNullOrEmpty(UserId))
                 throw new ArgumentException("need groupId and userId");
             verbose($"adding user {UserId} to group {GroupId}...");
-            await Users.AddToGroup(UserId, GroupId);
+            await users.AddToGroup(UserId, GroupId);
             record(sw);
         }
     }
@@ -100,6 +100,7 @@ namespace b2c.Commands
         
         public async Task OnExecuteAsync()
         {
+            Execute();
             var sw = Stopwatch.StartNew();
             var g = await groups.GetGroup(GroupId);
             verbose($"group {g.DisplayName} has {g.Members.Count} members:");
@@ -110,6 +111,27 @@ namespace b2c.Commands
             }
 
             record(sw);
+        }
+    }
+    
+    [Command("create", Description = "Create a new group")]
+    public class CreateGroup: BaseCommand
+    {
+        public CreateGroup(IConsole iconsole) : base(iconsole) { }
+        
+        [Option(ShortName = "n",Description = "The group name")]
+        public string GroupName { get; set; }
+
+        public async Task OnExecuteAsync()
+        {
+            if (string.IsNullOrEmpty(GroupName))
+            {
+                write("No group specified.");
+                return;
+            }
+            Execute();
+            var g = await groups.CreateGroup(GroupName);
+            write(g.Id);
         }
     }
 }

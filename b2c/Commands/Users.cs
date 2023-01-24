@@ -9,7 +9,7 @@ namespace b2c.Commands;
 
 
 [Command("users", Description = "user commands")]
-[Subcommand(typeof(CreateUser), typeof(DeleteUser), typeof(ListUsers))]
+[Subcommand(typeof(CreateUser), typeof(DeleteUser), typeof(ListUsers), typeof(FindUser))]
 class Users
 {
     public Task OnExecuteAsync()
@@ -80,6 +80,51 @@ class Users
                 write($"{ex.GetType()}: {ex.Message}");
             }
         }
+    }
+
+    [Command(Name = "find", Description ="find the user by id or UPN")]
+    class FindUser : BaseCommand
+    {
+        [Option(ShortName ="upn", Description ="the userPrincipalName to look for")]
+        public string Upn{get;set;}
+        
+        [Option(ShortName ="id", Description ="the user id")]
+        public string Id{get;set;}
+
+        public async Task OnExecuteAsync()
+        {
+            Execute();
+            if (string.IsNullOrEmpty(Id) && string.IsNullOrEmpty(Upn))
+            {
+                write("must include an id or a upn to look up.");
+                return;
+            }
+
+            Microsoft.Graph.User usr = null;
+
+            if (!string.IsNullOrEmpty(Id))
+            {
+                usr = await users.GetUser(Id);
+                if (usr == null)
+                {
+                    write($"user with id '{Id}' not found");
+                    return;
+                }
+            }
+            else
+            {
+                usr = await users.GetUserByUPN(Upn);
+                if (usr == null)
+                {
+                    write($"user with UPN '{Upn}' not found");
+                    return;
+                }
+            }
+
+            write($"user found: {usr.DisplayName} {usr.UserPrincipalName} {usr.Id}");
+            return;
+        }
+        public FindUser(IConsole iconsole) : base(iconsole){}
     }
 
     [Command(Name="delete", Description = "delete the user")]

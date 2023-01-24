@@ -8,7 +8,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using b2c.Data;
-using EPS.B2C.IEF;
 using McMaster.Extensions.CommandLineUtils;
 
 namespace b2c.Commands.IEF;

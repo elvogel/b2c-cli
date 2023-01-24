@@ -27,7 +27,6 @@
     <ItemGroup>
       <PackageReference Include="Azure.Core" Version="1.27.0" />
       <PackageReference Include="Azure.Identity" Version="1.8.1" />
-      <PackageReference Include="EPS.B2C.IEF" Version="0.0.3" />
       <PackageReference Include="EPS.Extensions.B2CGraphUtil" Version="6.0.4" />
       <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
