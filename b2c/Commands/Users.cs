@@ -16,13 +16,13 @@ class Users
     {
         return Task.CompletedTask;
     }
-    
+
 }
 
     [Command(Name="create",Description = "create the user")]
     class CreateUser: BaseCommand
     {
-        
+
         [Option(ShortName = "first", Description = "User's first name")]
         public string firstName { get; set; }
 
@@ -31,13 +31,13 @@ class Users
 
         [Option(ShortName = "display",Description = "the user's display name")]
         public string displayName { get; set; }
-        
+
         [Option(ShortName = "vf",Description = "display the user object in JSON")]
         public bool verboseFormat { get; set; }
-        
+
         [Option(ShortName = "csv",Description = "display user object details in CSV format")]
         public bool CSV { get; set; }
-        
+
         [Option(ShortName = "he",LongName = "header",Description = "display the header for CSV output")]
         public bool csvHeader { get; set; }
 
@@ -87,7 +87,7 @@ class Users
     {
         [Option(ShortName ="upn", Description ="the userPrincipalName to look for")]
         public string Upn{get;set;}
-        
+
         [Option(ShortName ="id", Description ="the user id")]
         public string Id{get;set;}
 
@@ -100,7 +100,7 @@ class Users
                 return;
             }
 
-            Microsoft.Graph.User usr = null;
+            Microsoft.Graph.Models.User usr;
 
             if (!string.IsNullOrEmpty(Id))
             {
@@ -132,7 +132,7 @@ class Users
     {
         [Option(Description = "The user ID (guid).")]
         public string userId { get; set; }
-        
+
         [Option(ShortName = "a", Description = "delete all users")]
         public bool allUsers { get; set; }
 
