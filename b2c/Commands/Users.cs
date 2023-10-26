@@ -130,7 +130,7 @@ class Users
     [Command(Name="delete", Description = "delete the user")]
     class DeleteUser: BaseCommand
     {
-        [Option(Description = "The user ID (guid).")]
+        [Option(ShortName ="id",Description = "The user ID (guid).")]
         public string userId { get; set; }
 
         [Option(ShortName = "a", Description = "delete all users")]

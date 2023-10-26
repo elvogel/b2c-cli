@@ -6,11 +6,10 @@
         <PackageId>b2c-cli</PackageId>
         <Title>Azure AD B2C Command Line Tool</Title>
         <Authors>endpointsystems</Authors>
-        <Description>This tool lets you create groups and users, assign users to groups, and perform policy tasks within Azure AD B2C. </Description>
-        <PackageProjectUrl>https://github.com/elvogel/b2c</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/elvogel/b2c</RepositoryUrl>
-        <RepositoryType>GitHub</RepositoryType>
-        <PackageTags>azure,ad,b2c,cli</PackageTags>
+        <Description>This tool lets you create groups and users, assign users to groups, and perform policy tasks within Azure AD B2C. Read the README for details!</Description>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>10</LangVersion>
         <Company>Endpoint Systems</Company>
         <Product>b2c command line tool</Product>
         <PackageVersion>6.0.6</PackageVersion>
@@ -46,7 +45,7 @@
             <Visible>false</Visible>
             <PackagePath>/</PackagePath>
         </None>
-        <None Include="$(SolutionDir)README.md" Pack="true" PackagePath="\" />
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
       <None Update="b2c.json">
           <Pack>false</Pack>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
