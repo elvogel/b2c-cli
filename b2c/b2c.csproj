@@ -13,9 +13,9 @@
         <PackageTags>azure,ad,b2c,cli</PackageTags>
         <Company>Endpoint Systems</Company>
         <Product>b2c command line tool</Product>
-        <PackageVersion>6.0.5</PackageVersion>
-        <AssemblyVersion>6.0.5</AssemblyVersion>
-        <FileVersion>6.0.5</FileVersion>
+        <PackageVersion>6.0.6</PackageVersion>
+        <AssemblyVersion>6.0.6</AssemblyVersion>
+        <FileVersion>6.0.6</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageReleaseNotes>Dependency updates.</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
