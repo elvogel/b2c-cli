@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <PackageId>b2c-cli</PackageId>
         <Title>Azure AD B2C Command Line Tool</Title>
         <Authors>endpointsystems</Authors>
         <Description>This tool lets you create groups and users, assign users to groups, and perform policy tasks within Azure AD B2C. Read the README for details!</Description>
@@ -9,43 +12,32 @@
         <LangVersion>10</LangVersion>
         <Company>Endpoint Systems</Company>
         <Product>b2c command line tool</Product>
-        <AssemblyVersion>6.0.6</AssemblyVersion>
-        <FileVersion>6.0.6</FileVersion>
-        <PackageVersion>6.0.6</PackageVersion>
-        <PackageId>b2c-cli</PackageId>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/elvogel/b2c</PackageProjectUrl>
-        <PackageTags>.NET Tool,Azure,AzureAD,AzureADB2C,CLI</PackageTags>
-        <PackageReleaseNotes>bug fixes and add user find command.</PackageReleaseNotes>
-        <PackageType>DotnetCliTool</PackageType>
-        <PackAsTool>true</PackAsTool>
-        <ToolCommandName>azs-util</ToolCommandName>
+        <PackageVersion>6.0.5</PackageVersion>
+        <AssemblyVersion>6.0.5</AssemblyVersion>
+        <FileVersion>6.0.5</FileVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <RepositoryType>GitHub</RepositoryType>
-        <RepositoryUrl>https://github.com/elvogel/b2c</RepositoryUrl>
-        <RepositoryType>GitHub</RepositoryType>
-        <RepositoryBranch>master</RepositoryBranch>
+        <PackageReleaseNotes>Dependency updates.</PackageReleaseNotes>
+        <LangVersion>10</LangVersion>
         <Copyright>2007-2023 Endpoint Systems. All rights reserved.</Copyright>
         <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="EPS.Extensions.B2CGraphUtil" Version="6.0.4" />
-      <PackageReference Include="Azure.Core" Version="1.27.0" />
-      <PackageReference Include="Azure.Identity" Version="1.8.1" />
-      <PackageReference Include="EPS.B2C.IEF" Version="0.0.3" />
-      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+      <PackageReference Include="Azure.Core" Version="1.35.0" />
+      <PackageReference Include="Azure.Identity" Version="1.10.3" />
+      <PackageReference Include="EPS.Extensions.B2CGraphUtil" Version="7.0.3" />
+      <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.1.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.2" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
       <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />`  q
-      <PackageReference Include="Microsoft.Graph" Version="4.51.0" />
-      <PackageReference Include="Microsoft.Graph.Core" Version="2.0.14" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+      <PackageReference Include="Microsoft.Graph" Version="5.32.0" />
+      <PackageReference Include="Microsoft.Graph.Core" Version="3.1.0" />
       <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.3.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
     <ItemGroup>
         <None Update="icon.png">
